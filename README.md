@@ -349,7 +349,10 @@ A prompt that passes all six test types is ready for supervised production deplo
 
 ## 6. Wrap-Up & Reflection (5 min)
 
-
+### Key Takeaways
+- Prompts Are Architecture, Not Decoration
+- Context Is a Managed Resource
+- Robustness Is Designed, Not Assumed
 
 > Next session: **Tools and Actions** 
 
