@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Structured Prompt Crafting — General Assembly BAA 6.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Barlow+Condensed:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --black:#0d0d0d;--black2:#1a1a1a;--black3:#252525;--black4:#333;
+  --line:#2e2e2e;--line2:#404040;--gray-dk:#555;--gray:#888;
+  --gray-lt:#bbb;--white:#fff;
+  --GA-red:#e8333a;--GA-red2:#ff4a50;
+  --yellow:#f5c518;--green:#22c55e;--blue:#3b82f6;--purple:#a855f7;--teal:#14b8a6;
+  --r:4px;--r-lg:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--white);font-size:16px;line-height:1.6;min-height:100vh}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--black2)}
+::-webkit-scrollbar-thumb{background:var(--black4);border-radius:3px}
+header{position:sticky;top:0;z-index:500;background:var(--black);border-bottom:2px solid var(--GA-red);display:flex;align-items:stretch;height:58px}
+.ga-logo{display:flex;align-items:center;gap:10px;padding:0 20px;border-right:1px solid var(--line);flex-shrink:0;cursor:pointer}
+.ga-mark{width:32px;height:32px;background:var(--GA-red);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:.05em;color:#fff;border-radius:2px;flex-shrink:0}
+.ga-name{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--gray-lt);text-transform:uppercase;line-height:1.2}
+.ga-name span{display:block;font-size:10px;color:var(--gray);font-weight:600}
+.tab-bar{display:flex;align-items:stretch;overflow-x:auto;flex:1;scrollbar-width:none}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab{display:flex;align-items:center;gap:6px;padding:0 18px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;color:var(--gray);letter-spacing:.02em;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:color .15s,border-color .15s;position:relative;top:2px}
+.tab:hover{color:var(--white)}
+.tab.active{color:var(--white);border-bottom-color:var(--GA-red)}
+.hd-end{display:flex;align-items:center;padding:0 18px;border-left:1px solid var(--line);flex-shrink:0}
+.prog-chip{background:var(--GA-red);color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:20px;white-space:nowrap}
+.section{display:none}.section.active{display:block}
+.wrap{max-width:860px;margin:0 auto;padding:48px 24px 80px}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--GA-red);margin-bottom:10px;display:block}
+h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.4rem,6vw,3.8rem);font-weight:900;line-height:1.05;letter-spacing:-.01em;color:#fff;margin-bottom:16px}
+h1 .red{color:var(--GA-red)}
+h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.7rem,4vw,2.4rem);font-weight:800;letter-spacing:-.01em;line-height:1.1;color:#fff;margin-bottom:8px}
+h2 .red{color:var(--GA-red)}
+h3{font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px}
+.lead{font-size:1.05rem;color:var(--gray-lt);line-height:1.7;margin-bottom:28px;max-width:640px}
+.hr{height:1px;background:var(--line);margin:36px 0}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:var(--r);font-family:'Barlow',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .15s;letter-spacing:.01em;white-space:nowrap}
+.btn-red{background:var(--GA-red);color:#fff;border-color:var(--GA-red)}
+.btn-red:hover{background:var(--GA-red2);border-color:var(--GA-red2);transform:translateY(-1px)}
+.btn-green{background:var(--green);color:var(--black);border-color:var(--green)}
+.btn-green:hover{background:#16a34a;border-color:#16a34a;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--gray-lt);border:2px solid var(--line2);padding:10px 20px;font-size:.88rem;font-weight:600;cursor:pointer;border-radius:var(--r);transition:all .15s}
+.btn-ghost:hover{border-color:var(--gray);color:#fff}
+.card{background:var(--black2);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;margin-bottom:16px}
+.card-rb{border-top:3px solid var(--GA-red)}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.b-red{background:rgba(232,51,58,.18);color:var(--GA-red)}
+.b-green{background:rgba(34,197,94,.18);color:var(--green)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.a1{animation:fadeUp .35s ease both}
+.a2{animation:fadeUp .35s .1s ease both}
+.a3{animation:fadeUp .35s .2s ease both}
+/* INTRO */
+.hero-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--black3);border:1px solid var(--line);border-radius:var(--r);padding:6px 14px;margin-bottom:20px;font-size:12px;font-weight:600;color:var(--gray-lt);letter-spacing:.04em}
+.hero-kicker .dot{width:8px;height:8px;background:var(--GA-red);border-radius:50%;flex-shrink:0}
+.obj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:32px}
+.obj-card{background:var(--black2);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;display:flex;gap:14px;align-items:flex-start}
+.obj-num{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;color:var(--GA-red);line-height:1;flex-shrink:0}
+.obj-body{font-size:.9rem;color:var(--gray-lt);line-height:1.55;padding-top:4px}
+.roadmap{display:flex;flex-direction:column}
+.rm-item{display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.rm-item:last-child{border-bottom:none}
+.rm-dot{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;border:2px solid var(--line);background:var(--black3);color:var(--gray);transition:all .25s}
+.rm-dot.done{background:var(--green);border-color:var(--green);color:var(--black)}
+.rm-dot.active{background:var(--GA-red);border-color:var(--GA-red);color:#fff}
+.rm-label{font-size:.95rem;font-weight:600;color:var(--gray);transition:color .2s;padding-top:6px}
+.rm-label.active{color:#fff}
+.rm-label.done{color:var(--green);text-decoration:line-through}
+.rm-sub{font-size:.8rem;color:var(--gray-dk);margin-top:2px}
+/* CTF EXPLORER */
+.ctf-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.ctf-pill{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--r-lg);border:2px solid var(--line);background:var(--black3);cursor:pointer;transition:all .18s;font-weight:700;font-size:.9rem;color:var(--gray)}
+.ctf-pill:hover{border-color:var(--line2);color:#fff}
+.ctf-pill.active-c{border-color:var(--blue);background:rgba(59,130,246,.1);color:var(--blue)}
+.ctf-pill.active-t{border-color:var(--GA-red);background:rgba(232,51,58,.1);color:var(--GA-red)}
+.ctf-pill.active-f{border-color:var(--green);background:rgba(34,197,94,.1);color:var(--green)}
+.ctf-detail{border-radius:var(--r-lg);padding:22px 24px;font-size:.95rem;line-height:1.75;min-height:90px;transition:all .2s;margin-bottom:22px;border:1px solid var(--line)}
+.ctf-detail strong{color:#fff;display:block;margin-bottom:4px}
+/* ANATOMY DRAG */
+.drag-pool{background:var(--black3);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;margin-bottom:18px}
+.pool-label{font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-dk);margin-bottom:10px}
+.drag-chips{display:flex;flex-wrap:wrap;gap:8px;min-height:36px}
+.drag-chip{display:inline-flex;padding:8px 14px;border-radius:20px;background:var(--black2);border:1.5px solid var(--line2);color:var(--gray-lt);font-size:.84rem;font-weight:600;cursor:grab;user-select:none;transition:all .15s;line-height:1.4}
+.drag-chip:active{cursor:grabbing}
+.drag-chip:hover{border-color:var(--GA-red);color:#fff}
+.drag-chip.correct{background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green);cursor:default}
+.drag-chip.wrong{background:rgba(232,51,58,.12);border-color:var(--GA-red);color:var(--GA-red);cursor:default}
+.anatomy-zones{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.az{border-radius:var(--r-lg);overflow:hidden}
+.az-head{padding:13px 18px;display:flex;align-items:center;gap:10px}
+.az-title{font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.az-sub{font-size:.78rem;color:rgba(255,255,255,.42);margin-top:1px}
+.az-body{background:var(--black2);border:1px solid var(--line);border-top:none;border-radius:0 0 var(--r-lg) var(--r-lg);padding:12px;min-height:72px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;transition:background .15s}
+.az-body.dragover{background:var(--black3)}
+.az-empty{font-size:.8rem;color:var(--gray-dk);font-style:italic;width:100%;text-align:center;padding:12px 0}
+/* PROMPT BUILDER */
+.scenario-card{background:var(--black3);border:1px solid var(--line);border-left:4px solid var(--GA-red);border-radius:var(--r-lg);padding:20px 22px;margin-bottom:24px}
+.scenario-card strong{color:#fff}
+.scenario-card p{font-size:.95rem;color:var(--gray-lt);line-height:1.7;margin-top:4px}
+.ctf-section{margin-bottom:20px}
+.ctf-section-label{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ctf-badge{padding:4px 14px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.ctf-hint{font-size:.82rem;color:var(--gray);flex:1}
+.ctf-opts{display:flex;flex-direction:column;gap:7px}
+.ctf-opt{background:var(--black2);border:2px solid var(--line);border-radius:var(--r-lg);padding:12px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;font-size:.88rem;color:var(--gray-lt);transition:all .15s;text-align:left;width:100%;line-height:1.55}
+.ctf-opt:hover:not(.disabled){border-color:var(--GA-red);color:#fff;background:rgba(232,51,58,.04)}
+.ctf-opt.selected-c{border-color:var(--blue);background:rgba(59,130,246,.06);color:#fff}
+.ctf-opt.selected-t{border-color:var(--GA-red);background:rgba(232,51,58,.06);color:#fff}
+.ctf-opt.selected-f{border-color:var(--green);background:rgba(34,197,94,.06);color:#fff}
+.ctf-opt.correct{border-color:var(--green);background:rgba(34,197,94,.07);color:#fff}
+.ctf-opt.wrong{border-color:var(--GA-red);background:rgba(232,51,58,.07);color:#fff}
+.ctf-opt.disabled{cursor:default}
+.copt-k{width:26px;height:26px;border-radius:5px;flex-shrink:0;background:var(--black3);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:var(--gray);transition:all .15s;margin-top:1px}
+.ctf-opt.correct .copt-k{background:var(--green);border-color:var(--green);color:var(--black)}
+.ctf-opt.wrong .copt-k{background:var(--GA-red);border-color:var(--GA-red);color:#fff}
+.ctf-fb{display:none;margin-top:8px;padding:10px 14px;border-radius:var(--r);font-size:.84rem;line-height:1.55}
+.ctf-fb.show{display:block}
+.ctf-fb.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#86efac}
+.ctf-fb.bad{background:rgba(232,51,58,.1);border:1px solid rgba(232,51,58,.25);color:#fca5a5}
+/* ASSEMBLED PROMPT */
+.assembled-prompt{display:none;background:var(--black3);border:1px solid var(--line2);border-radius:var(--r-lg);padding:24px;margin-top:24px}
+.assembled-prompt.visible{display:block;animation:fadeUp .3s ease both}
+.assembled-label{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gray-dk);margin-bottom:14px}
+.prompt-block{border-radius:var(--r);padding:14px 16px;margin-bottom:10px;font-size:.88rem;line-height:1.7}
+.prompt-block:last-child{margin-bottom:0}
+.prompt-block-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.prompt-copy{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--gray-lt);line-height:1.7;white-space:pre-wrap;word-break:break-word}
+/* QUIZ */
+.qz-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.qz-meta span{font-size:.85rem;color:var(--gray);font-weight:500}
+.prog-bar{height:4px;background:var(--black3);border-radius:2px;margin-bottom:28px;overflow:hidden}
+.prog-fill{height:100%;background:var(--GA-red);border-radius:2px;transition:width .4s ease}
+.quiz-q{font-family:'Barlow Condensed',sans-serif;font-size:1.45rem;font-weight:700;line-height:1.3;color:#fff;margin-bottom:20px;letter-spacing:-.01em}
+.q-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.q-opt{background:var(--black2);border:2px solid var(--line);border-radius:var(--r-lg);padding:14px 18px;cursor:pointer;display:flex;align-items:flex-start;gap:14px;font-size:.95rem;color:var(--gray-lt);transition:all .16s;text-align:left;width:100%}
+.q-opt:hover:not(.disabled){border-color:var(--GA-red);color:#fff;background:rgba(232,51,58,.05)}
+.q-opt.correct{border-color:var(--green);background:rgba(34,197,94,.07);color:#fff}
+.q-opt.wrong{border-color:var(--GA-red);background:rgba(232,51,58,.08);color:#fff}
+.q-opt.disabled{cursor:default}
+.opt-k{width:30px;height:30px;border-radius:6px;flex-shrink:0;background:var(--black3);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;color:var(--gray);transition:all .16s}
+.q-opt.correct .opt-k{background:var(--green);border-color:var(--green);color:var(--black)}
+.q-opt.wrong .opt-k{background:var(--GA-red);border-color:var(--GA-red);color:#fff}
+.q-opt:hover:not(.disabled) .opt-k{border-color:var(--GA-red);color:var(--GA-red)}
+.fb-box{display:none;border-radius:var(--r-lg);padding:14px 18px;font-size:.92rem;line-height:1.6;margin-bottom:14px}
+.fb-box.show{display:flex;gap:10px;align-items:flex-start}
+.fb-box.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac}
+.fb-box.bad{background:rgba(232,51,58,.1);border:1px solid rgba(232,51,58,.3);color:#fca5a5}
+.fb-icon{font-size:1.1rem;flex-shrink:0}
+.qz-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+/* RESULTS */
+.results-ring{position:relative;width:120px;height:120px;flex-shrink:0}
+.results-ring-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-pct{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;color:#fff;line-height:1}
+.ring-sub{font-size:.7rem;color:var(--gray);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+.score-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.score-row:last-child{border-bottom:none}
+.score-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.score-bar-wrap{width:80px;height:3px;background:var(--black3);border-radius:2px;flex-shrink:0}
+.score-bar-fill{height:100%;border-radius:2px}
+.takeaway-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.takeaway-item:last-child{border-bottom:none}
+.tk-num{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:var(--GA-red);flex-shrink:0;line-height:1;padding-top:2px}
+.tk-txt{font-size:.92rem;color:var(--gray-lt);line-height:1.65}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="ga-logo" onclick="nav('intro')">
+    <div class="ga-mark">GA</div>
+    <div class="ga-name">General Assembly<span>Build AI Agents · BAA 6.0</span></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="nav('intro')"    id="t-intro">⬡ Overview</div>
+    <div class="tab"        onclick="nav('framework')"id="t-framework">◈ CTF Framework</div>
+    <div class="tab"        onclick="nav('anatomy')"  id="t-anatomy">⌖ Anatomy</div>
+    <div class="tab"        onclick="nav('p1')"       id="t-p1">✦ Prompt 1</div>
+    <div class="tab"        onclick="nav('p2')"       id="t-p2">✦ Prompt 2</div>
+    <div class="tab"        onclick="nav('p3')"       id="t-p3">✦ Prompt 3</div>
+    <div class="tab"        onclick="nav('quiz')"     id="t-quiz">◇ Check</div>
+    <div class="tab"        onclick="nav('results')"  id="t-results">★ Results</div>
+  </div>
+  <div class="hd-end"><div class="prog-chip" id="progressChip">0 / 4</div></div>
+</header>
+
+<!-- ══════════════ INTRO ══════════════ -->
+<div class="section active" id="s-intro">
+  <div class="wrap">
+    <div class="a1" style="padding-bottom:40px;border-bottom:1px solid var(--line);margin-bottom:36px">
+      <div class="hero-kicker"><div class="dot"></div>Hands-On Lab &nbsp;·&nbsp; Module 6 &nbsp;·&nbsp; BAA 6.0</div>
+      <h1>Structured<br/><span class="red">Prompt Crafting</span></h1>
+      <p class="lead">A prompt is not a question — it is an architecture decision. The Context–Task–Format framework gives agents the precision they need to produce consistent, role-appropriate, professionally structured output every time.</p>
+      <button class="btn btn-red" onclick="nav('framework')">Start Lab →</button>
+    </div>
+    <span class="eyebrow">Learning Objectives</span>
+    <div class="obj-grid a2">
+      <div class="obj-card"><div class="obj-num">01</div><div class="obj-body">Define the three components of the Context–Task–Format framework and explain what each controls.</div></div>
+      <div class="obj-card"><div class="obj-num">02</div><div class="obj-body">Identify weak vs. strong prompt elements and classify them into the correct CTF layer.</div></div>
+      <div class="obj-card"><div class="obj-num">03</div><div class="obj-body">Build three complete prompts — for Healthcare, Customer Service, and Education — using the CTF framework.</div></div>
+      <div class="obj-card"><div class="obj-num">04</div><div class="obj-body">Explain why each design decision produces better agent output for a specific role and use case.</div></div>
+    </div>
+    <div class="hr"></div>
+    <span class="eyebrow">Your Lab Roadmap</span>
+    <div class="card a3">
+      <div class="roadmap">
+        <div class="rm-item"><div class="rm-dot active" id="dot-framework">—</div><div><div class="rm-label active" id="lbl-framework">The CTF Framework</div><div class="rm-sub">Click Context · Task · Format to explore each component — see good vs. weak examples</div></div></div>
+        <div class="rm-item"><div class="rm-dot" id="dot-anatomy">1</div><div><div class="rm-label" id="lbl-anatomy">Prompt Anatomy Lab</div><div class="rm-sub">Drag 9 prompt fragments into Context · Task · Format — distinguish strong from weak</div></div></div>
+        <div class="rm-item"><div class="rm-dot" id="dot-p1">2</div><div><div class="rm-label" id="lbl-p1">Prompt 1 — Healthcare AI</div><div class="rm-sub">Build a clinical risk extraction prompt for a healthcare AI product owner</div></div></div>
+        <div class="rm-item"><div class="rm-dot" id="dot-p2">3</div><div><div class="rm-label" id="lbl-p2">Prompt 2 — Customer Service</div><div class="rm-sub">Build a complaint resolution prompt for an e-commerce brand</div></div></div>
+        <div class="rm-item"><div class="rm-dot" id="dot-p3">4</div><div><div class="rm-label" id="lbl-p3">Prompt 3 — AI Instruction</div><div class="rm-sub">Build an explainability prompt for a non-technical audience</div></div></div>
+        <div class="rm-item"><div class="rm-dot" id="dot-quiz">5</div><div><div class="rm-label" id="lbl-quiz">Knowledge Check</div><div class="rm-sub">7 questions · CTF mastery · 70% to pass</div></div></div>
+        <div class="rm-item"><div class="rm-dot" id="dot-results">—</div><div><div class="rm-label" id="lbl-results">Your Results</div><div class="rm-sub">Score breakdown · key takeaways</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ FRAMEWORK ══════════════ -->
+<div class="section" id="s-framework">
+  <div class="wrap">
+    <span class="eyebrow">The Framework</span>
+    <h2>Context · Task · <span class="red">Format</span></h2>
+    <p class="lead">Every professional prompt has three layers. Click each to understand what it controls — and what breaks when it's missing.</p>
+
+    <div class="ctf-pills">
+      <div class="ctf-pill active-c" id="pill-c" onclick="showCTF('c')"><span style="font-size:1.1rem">🏷️</span> Context</div>
+      <div class="ctf-pill" id="pill-t" onclick="showCTF('t')"><span style="font-size:1.1rem">🎯</span> Task</div>
+      <div class="ctf-pill" id="pill-f" onclick="showCTF('f')"><span style="font-size:1.1rem">📐</span> Format</div>
+    </div>
+
+    <div class="ctf-detail" id="ctfDetail" style="background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.25);color:var(--gray-lt)">
+      <strong style="color:var(--blue)">CONTEXT — Who is the agent? What does it know?</strong>
+      Context is the role, expertise, and situational knowledge you give the agent before it does anything. It answers: who is this agent, what does it already know, what constraints apply, and what perspective should it reason from.<br/><br/>
+      <strong>Without context:</strong> The agent has no persona — it defaults to a generic assistant with no domain authority.<br/>
+      <strong>With strong context:</strong> "You are a senior clinical documentation specialist at a HIPAA-compliant telehealth platform with 8 years of experience reviewing physician intake forms." — the agent now reasons from that position.
+    </div>
+
+    <div class="hr"></div>
+    <span class="eyebrow">The Confusion Tax</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px">
+      <div class="card" style="padding:18px;margin-bottom:0;border-top:3px solid var(--gray-dk)">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px">Weak Prompt</div>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--gray);line-height:1.65;padding:12px;background:var(--black3);border-radius:var(--r)">"Summarize the customer feedback and tell me what to do about it."</p>
+        <p style="font-size:.82rem;color:var(--GA-red);margin-top:10px;line-height:1.5">No role, no output type, no constraints. Every run produces a different result.</p>
+      </div>
+      <div class="card" style="padding:18px;margin-bottom:0;border-top:3px solid var(--GA-red)">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--GA-red);margin-bottom:12px">Strong CTF Prompt</div>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--gray-lt);line-height:1.65;padding:12px;background:var(--black3);border-radius:var(--r)">[C] "You are a CX analyst at a B2B SaaS company…<br/>[T] Analyze the 10 reviews below and identify the top 3 themes…<br/>[F] Return a JSON array with theme, frequency, and urgency."</p>
+        <p style="font-size:.82rem;color:var(--green);margin-top:10px;line-height:1.5">Role defined. Goal precise. Output deterministic. Works every time.</p>
+      </div>
+    </div>
+    <button class="btn btn-red" onclick="nav('anatomy')">Next: Prompt Anatomy Lab →</button>
+  </div>
+</div>
+
+<!-- ══════════════ ANATOMY ══════════════ -->
+<div class="section" id="s-anatomy">
+  <div class="wrap">
+    <span class="eyebrow">Section 01 · Lab Activity</span>
+    <h2>Prompt <span class="red">Anatomy Lab</span></h2>
+    <p class="lead">Each fragment below belongs to exactly one CTF layer. Drag it to the correct zone. Some fragments are intentionally weak — and still belong to a layer, just done poorly.</p>
+    <div class="drag-pool" id="anatPool">
+      <div class="pool-label">Unclassified prompt fragments — drag to Context · Task · or Format</div>
+      <div class="drag-chips" id="anatPoolChips"></div>
+    </div>
+    <div class="anatomy-zones" id="anatZones"></div>
+    <details style="margin-bottom:14px">
+      <summary style="font-size:.82rem;color:var(--gray-dk);cursor:pointer">On mobile? Tap to assign</summary>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px" id="mobileAnat"></div>
+    </details>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-red"   id="anatCheckBtn"  onclick="checkAnat()" disabled>Check Classifications</button>
+      <button class="btn btn-ghost" id="anatNextBtn"   onclick="markDone('anatomy');nav('p1')" style="display:none">Next: Prompt 1 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PROMPT 1 — HEALTHCARE ══════════════ -->
+<div class="section" id="s-p1">
+  <div class="wrap">
+    <span class="eyebrow">Section 02 · Prompt Builder</span>
+    <h2>Prompt 1 — <span class="red">Healthcare AI</span></h2>
+    <p class="lead">For each CTF component, choose the strongest option. When all three are locked in, you'll see the assembled final prompt.</p>
+    <div class="scenario-card">
+      <strong>Your role:</strong>
+      <p>You are an AI Product Owner at a HIPAA-compliant telehealth startup. Your agent reads physician intake forms and flags potential clinical risks before the patient's first appointment — allowing the care team to prepare in advance. You need a prompt that is precise, clinically grounded, and produces a consistent structured output every time.</p>
+    </div>
+    <div id="p1builder"></div>
+    <div class="assembled-prompt" id="p1assembled">
+      <div class="assembled-label">✦ Your Assembled Prompt</div>
+      <div class="prompt-block" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2)">
+        <div class="prompt-block-label" style="color:var(--blue)">🏷️ Context</div>
+        <div class="prompt-copy" id="p1-c-text"></div>
+      </div>
+      <div class="prompt-block" style="background:rgba(232,51,58,.08);border:1px solid rgba(232,51,58,.2)">
+        <div class="prompt-block-label" style="color:var(--GA-red)">🎯 Task</div>
+        <div class="prompt-copy" id="p1-t-text"></div>
+      </div>
+      <div class="prompt-block" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2)">
+        <div class="prompt-block-label" style="color:var(--green)">📐 Format</div>
+        <div class="prompt-copy" id="p1-f-text"></div>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="p1NextBtn" onclick="markDone('p1');nav('p2')" style="display:none">Next: Prompt 2 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PROMPT 2 — CUSTOMER SERVICE ══════════════ -->
+<div class="section" id="s-p2">
+  <div class="wrap">
+    <span class="eyebrow">Section 03 · Prompt Builder</span>
+    <h2>Prompt 2 — <span class="red">Customer Service</span></h2>
+    <p class="lead">Choose the strongest Context, Task, and Format for this scenario.</p>
+    <div class="scenario-card">
+      <strong>Your role:</strong>
+      <p>You are an AI consultant helping an e-commerce brand automate their first-response to 1-star reviews. The agent must produce empathetic, brand-appropriate resolution replies that de-escalate frustration and offer a concrete next step — without sounding scripted or dismissive.</p>
+    </div>
+    <div id="p2builder"></div>
+    <div class="assembled-prompt" id="p2assembled">
+      <div class="assembled-label">✦ Your Assembled Prompt</div>
+      <div class="prompt-block" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2)">
+        <div class="prompt-block-label" style="color:var(--blue)">🏷️ Context</div>
+        <div class="prompt-copy" id="p2-c-text"></div>
+      </div>
+      <div class="prompt-block" style="background:rgba(232,51,58,.08);border:1px solid rgba(232,51,58,.2)">
+        <div class="prompt-block-label" style="color:var(--GA-red)">🎯 Task</div>
+        <div class="prompt-copy" id="p2-t-text"></div>
+      </div>
+      <div class="prompt-block" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2)">
+        <div class="prompt-block-label" style="color:var(--green)">📐 Format</div>
+        <div class="prompt-copy" id="p2-f-text"></div>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="p2NextBtn" onclick="markDone('p2');nav('p3')" style="display:none">Next: Prompt 3 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PROMPT 3 — EDUCATION ══════════════ -->
+<div class="section" id="s-p3">
+  <div class="wrap">
+    <span class="eyebrow">Section 04 · Prompt Builder</span>
+    <h2>Prompt 3 — <span class="red">AI Instruction</span></h2>
+    <p class="lead">Choose the strongest Context, Task, and Format for this scenario.</p>
+    <div class="scenario-card">
+      <strong>Your role:</strong>
+      <p>You are an AI/ML Instructor at a workforce training program. Your agent must explain a confusion matrix to a non-technical marketing team — people who understand campaign performance metrics but have no machine learning background. The explanation must be practical, relatable, and immediately applicable to their work.</p>
+    </div>
+    <div id="p3builder"></div>
+    <div class="assembled-prompt" id="p3assembled">
+      <div class="assembled-label">✦ Your Assembled Prompt</div>
+      <div class="prompt-block" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2)">
+        <div class="prompt-block-label" style="color:var(--blue)">🏷️ Context</div>
+        <div class="prompt-copy" id="p3-c-text"></div>
+      </div>
+      <div class="prompt-block" style="background:rgba(232,51,58,.08);border:1px solid rgba(232,51,58,.2)">
+        <div class="prompt-block-label" style="color:var(--GA-red)">🎯 Task</div>
+        <div class="prompt-copy" id="p3-t-text"></div>
+      </div>
+      <div class="prompt-block" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2)">
+        <div class="prompt-block-label" style="color:var(--green)">📐 Format</div>
+        <div class="prompt-copy" id="p3-f-text"></div>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="p3NextBtn" onclick="markDone('p3');nav('quiz')" style="display:none">Go to Knowledge Check →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ QUIZ ══════════════ -->
+<div class="section" id="s-quiz">
+  <div class="wrap">
+    <span class="eyebrow">Section 05</span>
+    <h2>Knowledge <span class="red">Check</span></h2>
+    <p class="lead">Test your understanding. You need 70% or higher to mark this section complete.</p>
+    <div id="quizActive">
+      <div class="qz-meta"><span id="qMeta">Question 1 of 7</span><span id="qScoreTxt">Score: 0 / 0</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="qProg" style="width:0%"></div></div>
+      <div class="card card-rb">
+        <div class="quiz-q" id="quizQ"></div>
+        <div class="q-opts" id="quizOpts"></div>
+        <div class="fb-box" id="quizFB"></div>
+        <div class="qz-foot">
+          <button class="btn btn-red" id="qNextBtn" onclick="nextQ()" style="display:none">Continue →</button>
+          <div style="font-size:.85rem;color:var(--gray);font-family:'JetBrains Mono',monospace" id="qz-s"></div>
+        </div>
+      </div>
+    </div>
+    <div id="quizDone" style="display:none">
+      <div class="card card-rb">
+        <h3 style="font-size:1.2rem;margin-bottom:8px">Quiz Complete <span id="qBadge"></span></h3>
+        <p style="font-size:.95rem;color:var(--gray-lt);line-height:1.7;margin-bottom:20px" id="qMsg"></p>
+        <button class="btn btn-green" onclick="markDone('quiz');buildResults();nav('results')">See Your Results →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ RESULTS ══════════════ -->
+<div class="section" id="s-results">
+  <div class="wrap">
+    <span class="eyebrow">Your Results</span>
+    <h2>Lab <span class="red">Complete</span></h2>
+    <div id="resultsBody"></div>
+  </div>
+</div>
+
+<script>
+// ─── Nav ──────────────────────────────────────────────────────────────────────
+const ALL_SECS=['intro','framework','anatomy','p1','p2','p3','quiz','results'];
+let completed=new Set(), sectionScores={};
+
+function nav(id){
+  ALL_SECS.forEach(s=>{
+    document.getElementById('s-'+s).classList.remove('active');
+    const t=document.getElementById('t-'+s);
+    if(t) t.classList.remove('active');
+  });
+  document.getElementById('s-'+id).classList.add('active');
+  const t=document.getElementById('t-'+id);
+  if(t) t.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='anatomy'&&!anatBuilt) buildAnat();
+  if(id==='p1'&&!p1Built) buildBuilder('p1');
+  if(id==='p2'&&!p2Built) buildBuilder('p2');
+  if(id==='p3'&&!p3Built) buildBuilder('p3');
+  if(id==='quiz'&&!quizStarted) initQuiz();
+}
+
+function markDone(key){
+  completed.add(key);
+  document.getElementById('progressChip').textContent=completed.size+' / 4';
+  const d=document.getElementById('dot-'+key);
+  const l=document.getElementById('lbl-'+key);
+  if(d){d.className='rm-dot done';d.textContent='✓';}
+  if(l){l.className='rm-label done';}
+}
+
+// ─── CTF EXPLORER ─────────────────────────────────────────────────────────────
+const CTF_DATA={
+  c:{
+    cls:'active-c',
+    html:`<strong style="color:var(--blue)">CONTEXT — Who is the agent? What does it know?</strong>
+Context anchors the agent's identity, expertise, constraints, and prior knowledge. It tells the LLM which perspective to reason from, what domain knowledge to apply, and what it should never do.<br/><br/>
+<strong>Weak context:</strong> "You are a helpful assistant."<br/>
+<strong>Strong context:</strong> "You are a senior clinical documentation specialist at a HIPAA-compliant telehealth platform. You have reviewed over 10,000 intake forms. You never include patient names or identifiers in your output. You flag ambiguous cases rather than making assumptions."<br/><br/>
+<span style="color:var(--blue)">Controls: role precision · domain authority · constraints · persona consistency</span>`
+  },
+  t:{
+    cls:'active-t',
+    html:`<strong style="color:var(--GA-red)">TASK — What exactly must the agent do?</strong>
+The Task component specifies the precise action, the input it will receive, the scope of the analysis, and any decision rules. Vague tasks produce vague output — every degree of ambiguity compounds across an agent loop.<br/><br/>
+<strong>Weak task:</strong> "Summarize the following text."<br/>
+<strong>Strong task:</strong> "Analyze the intake form below. Identify and extract every clinical risk signal. For each signal, assign a severity level (High / Medium / Low) and provide a one-sentence rationale. If no risk signals are present, return an explicit no-risk confirmation."<br/><br/>
+<span style="color:var(--GA-red)">Controls: action precision · scope · decision rules · edge case handling</span>`
+  },
+  f:{
+    cls:'active-f',
+    html:`<strong style="color:var(--green)">FORMAT — What does the output look like?</strong>
+Format specifies the exact structure, length, style, and data type of the response. Without it, the agent decides for itself — producing inconsistent output that downstream systems (reports, APIs, UIs) can't reliably parse.<br/><br/>
+<strong>Weak format:</strong> "Give me the answer as a list."<br/>
+<strong>Strong format:</strong> "Return a JSON array. Each object must contain: risk_signal (string), severity ('High'|'Medium'|'Low'), rationale (max 20 words). Do not include any markdown, preamble, or explanation outside the JSON array."<br/><br/>
+<span style="color:var(--green)">Controls: structure · data type · length · parsability · consistency</span>`
+  }
+};
+
+function showCTF(key){
+  ['c','t','f'].forEach(k=>{
+    const pill=document.getElementById('pill-'+k);
+    pill.className='ctf-pill'+(k===key?' '+CTF_DATA[key].cls:'');
+  });
+  const det=document.getElementById('ctfDetail');
+  const colors={c:'rgba(59,130,246,.06)',t:'rgba(232,51,58,.06)',f:'rgba(34,197,94,.06)'};
+  const borders={c:'rgba(59,130,246,.25)',t:'rgba(232,51,58,.25)',f:'rgba(34,197,94,.25)'};
+  det.style.background=colors[key];
+  det.style.borderColor=borders[key];
+  det.innerHTML=CTF_DATA[key].html;
+}
+
+// ─── ANATOMY DATA ─────────────────────────────────────────────────────────────
+const ANAT_ZONES=[
+  {id:'context', label:'Context', icon:'🏷️', color:'#3b82f6', bg:'rgba(59,130,246,.14)', desc:'Role, expertise, persona, and constraints'},
+  {id:'task',    label:'Task',    icon:'🎯', color:'#e8333a', bg:'rgba(232,51,58,.14)',  desc:'What to do, scope, and decision rules'},
+  {id:'format',  label:'Format',  icon:'📐', color:'#22c55e', bg:'rgba(34,197,94,.14)', desc:'Output structure, type, and length'},
+];
+
+const ANAT_ITEMS=[
+  {id:'an1', text:'You are a senior product manager with 10 years of SaaS experience',          answer:'context'},
+  {id:'an2', text:'You are an AI assistant',                                                    answer:'context'},
+  {id:'an3', text:'Never include competitor product names in your response',                    answer:'context'},
+  {id:'an4', text:'Identify the top 3 churn risk signals from the customer feedback below',    answer:'task'},
+  {id:'an5', text:'Analyze the following support ticket and suggest a resolution',              answer:'task'},
+  {id:'an6', text:'Write a one-paragraph summary of the document',                             answer:'task'},
+  {id:'an7', text:'Return a JSON array with keys: signal, severity, and evidence',             answer:'format'},
+  {id:'an8', text:'Use bullet points and keep the total response under 150 words',             answer:'format'},
+  {id:'an9', text:'Do not include any markdown — plain text only, no headers or bold',         answer:'format'},
+].sort(()=>Math.random()-.5);
+
+let anatBuilt=false, anatPlacements={}, anatChecked=false;
+
+function buildAnat(){
+  anatBuilt=true;
+  const pool=document.getElementById('anatPoolChips');
+  const mob=document.getElementById('mobileAnat');
+  ANAT_ITEMS.forEach(item=>{
+    pool.appendChild(makeAnatChip(item));
+    const row=document.createElement('div');
+    row.style.cssText='padding:10px;background:var(--black2);border-radius:4px;border:1px solid var(--line)';
+    const lbl=document.createElement('div');
+    lbl.style.cssText='font-size:.88rem;color:var(--gray-lt);margin-bottom:6px;line-height:1.4';
+    lbl.textContent=item.text;
+    const btns=document.createElement('div'); btns.style.cssText='display:flex;gap:4px;flex-wrap:wrap';
+    ANAT_ZONES.forEach(z=>{
+      const b=document.createElement('button');
+      b.style.cssText=`padding:3px 8px;border-radius:3px;border:1.5px solid ${z.color};background:transparent;font-size:.75rem;cursor:pointer;color:${z.color};font-weight:700`;
+      b.textContent=z.label;
+      b.addEventListener('click',()=>mobAnatAssign(item.id,z.id));
+      btns.appendChild(b);
+    });
+    row.appendChild(lbl); row.appendChild(btns); mob.appendChild(row);
+  });
+  const container=document.getElementById('anatZones');
+  ANAT_ZONES.forEach(z=>{
+    const zone=document.createElement('div'); zone.className='az'; zone.style.border=`1px solid ${z.color}30`;
+    const head=document.createElement('div'); head.className='az-head'; head.style.background=z.bg;
+    head.innerHTML=`<span style="font-size:1.1rem">${z.icon}</span><div><div class="az-title" style="color:${z.color}">${z.label}</div><div class="az-sub">${z.desc}</div></div>`;
+    const body=document.createElement('div'); body.className='az-body'; body.id='azone-'+z.id;
+    body.innerHTML='<span class="az-empty">Drop fragments here</span>';
+    body.addEventListener('dragover',e=>{e.preventDefault();body.classList.add('dragover');});
+    body.addEventListener('dragleave',()=>body.classList.remove('dragover'));
+    body.addEventListener('drop',e=>{
+      e.preventDefault(); body.classList.remove('dragover');
+      if(anatChecked) return;
+      const id=e.dataTransfer.getData('text/plain');
+      anatPlacements[id]=z.id;
+      const chip=document.getElementById('achip-'+id); if(chip) chip.parentNode.removeChild(chip);
+      const emp=body.querySelector('.az-empty'); if(emp) emp.remove();
+      body.appendChild(makeAnatChip(ANAT_ITEMS.find(x=>x.id===id)));
+      updateAnatBtn();
+    });
+    zone.appendChild(head); zone.appendChild(body); container.appendChild(zone);
+  });
+}
+
+function makeAnatChip(item){
+  const c=document.createElement('div'); c.className='drag-chip'; c.id='achip-'+item.id;
+  c.textContent=item.text; c.setAttribute('draggable','true');
+  c.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',item.id));
+  return c;
+}
+function mobAnatAssign(itemId,zoneId){
+  anatPlacements[itemId]=zoneId;
+  const chip=document.getElementById('achip-'+itemId); if(chip) chip.parentNode.removeChild(chip);
+  const body=document.getElementById('azone-'+zoneId);
+  if(body){const emp=body.querySelector('.az-empty');if(emp)emp.remove();body.appendChild(makeAnatChip(ANAT_ITEMS.find(x=>x.id===itemId)));}
+  updateAnatBtn();
+}
+function updateAnatBtn(){document.getElementById('anatCheckBtn').disabled=!ANAT_ITEMS.every(i=>anatPlacements[i.id]);}
+function checkAnat(){
+  anatChecked=true; let correct=0;
+  ANAT_ITEMS.forEach(item=>{
+    const chip=document.getElementById('achip-'+item.id); if(!chip) return;
+    if(anatPlacements[item.id]===item.answer){chip.classList.add('correct');correct++;}
+    else chip.classList.add('wrong');
+  });
+  sectionScores.anatomy={earned:correct,possible:ANAT_ITEMS.length};
+  document.getElementById('anatCheckBtn').style.display='none';
+  document.getElementById('anatNextBtn').style.display='inline-flex';
+}
+
+// ─── PROMPT BUILDERS ──────────────────────────────────────────────────────────
+const BUILDERS={
+  p1:{
+    components:{
+      c:{
+        label:'Context',icon:'🏷️',color:'#3b82f6',hint:'Who is the agent — role, domain, and constraints?',
+        opts:[
+          {k:'A',text:'You are an AI assistant that can help with medical documents.',ans:false,fb:'Too generic. No role seniority, no domain constraint, no privacy requirement. The agent has no identity to reason from.'},
+          {k:'B',text:'You are a senior clinical documentation specialist at a HIPAA-compliant telehealth platform. You have reviewed thousands of physician intake forms. You never include patient names or record numbers in output. When a finding is ambiguous, you flag it rather than assume.',ans:true,fb:'Correct! Role is specific, domain authority is established, the privacy constraint is explicit, and the edge-case behavior (flag vs. assume) is defined.'},
+          {k:'C',text:'You are a doctor who reviews patient paperwork.',ans:false,fb:'The agent should not be positioned as a doctor — that implies medical authority it does not have. "Documentation specialist" frames the role correctly without legal risk.'},
+        ]
+      },
+      t:{
+        label:'Task',icon:'🎯',color:'#e8333a',hint:'What exactly must the agent do — and what are the rules?',
+        opts:[
+          {k:'A',text:'Summarize the patient intake form and note anything important.',ans:false,fb:'Too vague. "Anything important" is undefined. No severity classification, no edge case rule, no scope boundary. Every run will produce inconsistent output.'},
+          {k:'B',text:'Read the intake form below and check for health problems.',ans:false,fb:'Still too vague and medically risky. "Health problems" is not a defined category for a documentation agent. This produces unstructured, unpredictable output.'},
+          {k:'C',text:'Analyze the intake form provided. Identify every clinical risk signal — including medication conflicts, flagged symptoms, incomplete answers, and reported allergies. For each signal, assign a severity level (Critical / High / Medium / Low) and provide a one-sentence rationale. If no risk signals are found, return an explicit confirmation.',ans:true,fb:'Correct! Scope is precise, risk categories are defined, severity scale is explicit, the output requirement per item is clear, and the no-risk edge case is handled.'},
+        ]
+      },
+      f:{
+        label:'Format',icon:'📐',color:'#22c55e',hint:'What does the output structure look like — exactly?',
+        opts:[
+          {k:'A',text:'Return your findings as a JSON array. Each object must contain: risk_signal (string), severity ("Critical"|"High"|"Medium"|"Low"), rationale (max 25 words). Output the JSON array only — no markdown, no preamble, no explanation.',ans:true,fb:'Correct! Data type is specified (JSON), keys and value types are defined, the severity enum is locked, the rationale length is bounded, and markdown/noise is explicitly excluded.'},
+          {k:'B',text:'Give me the results as a list with bullet points.',ans:false,fb:'Unstructured. "List with bullet points" is not machine-parsable. Downstream systems that consume this output cannot reliably extract fields.'},
+          {k:'C',text:'Write a paragraph summarizing the risks you found.',ans:false,fb:'A paragraph is unstructured, variable in length, and unparsable. Agents feeding output to downstream systems need deterministic structure — not narrative prose.'},
+        ]
+      }
+    },
+    assembled:{
+      c:"You are a senior clinical documentation specialist at a HIPAA-compliant telehealth platform. You have reviewed thousands of physician intake forms. You never include patient names or record numbers in output. When a finding is ambiguous, you flag it rather than assume.",
+      t:"Analyze the intake form provided. Identify every clinical risk signal — including medication conflicts, flagged symptoms, incomplete answers, and reported allergies. For each signal, assign a severity level (Critical / High / Medium / Low) and provide a one-sentence rationale. If no risk signals are found, return an explicit confirmation.",
+      f:'Return a JSON array. Each object must contain: risk_signal (string), severity ("Critical"|"High"|"Medium"|"Low"), rationale (max 25 words). Output the JSON array only — no markdown, no preamble, no explanation.'
+    }
+  },
+  p2:{
+    components:{
+      c:{
+        label:'Context',icon:'🏷️',color:'#3b82f6',hint:'Who is the agent — role, tone, and brand boundaries?',
+        opts:[
+          {k:'A',text:'You are a customer service agent for an online store.',ans:false,fb:'Too generic. No brand voice, no tone guidance, no constraints on what the agent can or cannot offer. The reply could be robotic, overpromising, or off-brand.'},
+          {k:'B',text:'You are a senior customer experience specialist for an e-commerce brand known for warm, human-first communication. You never make refund promises, discount commitments, or statements about shipping timelines — those require human approval. You always validate the customer\'s frustration before offering a path forward.',ans:true,fb:'Correct! Brand voice is defined, scope limitations are explicit (no refund promises), the tone priority (validate first, then resolve) is baked in, and the role carries authority.'},
+          {k:'C',text:'You are a helpful AI that writes nice replies to customer complaints.',ans:false,fb:'"Nice" is not a brand voice. This gives the agent no constraint, no escalation boundary, and no behavior when the complaint is complex or legally sensitive.'},
+        ]
+      },
+      t:{
+        label:'Task',icon:'🎯',color:'#e8333a',hint:'What must the agent produce — and what must it never do?',
+        opts:[
+          {k:'A',text:'Write a reply to the 1-star review below. Acknowledge the customer\'s specific frustration using their own words, express genuine empathy without being defensive, offer one concrete next step the customer can take immediately, and close with a human sign-off. Do not mention competitors, do not promise refunds or replacements, and do not use phrases like "We apologize for the inconvenience."',ans:true,fb:'Correct! The action is precise, the tone instruction is behavioral (use their words, no defensiveness), the constraint list is explicit, and the clichéd phrase exclusion prevents a robotic reply.'},
+          {k:'B',text:'Respond to this bad review in a nice way.',ans:false,fb:'"Nice way" is undefined — no structure, no constraints, no behavioral guidance. This produces template-feeling, generic responses that often feel more dismissive than helpful.'},
+          {k:'C',text:'Write a professional reply to the customer complaint.',ans:false,fb:'"Professional" is ambiguous. Without instructions on tone, structure, what to avoid, and what concrete action to offer, the agent defaults to generic corporate-speak.'},
+        ]
+      },
+      f:{
+        label:'Format',icon:'📐',color:'#22c55e',hint:'What does the reply look like — length, structure, tone marker?',
+        opts:[
+          {k:'A',text:'Write a long detailed response.',ans:false,fb:'"Long" is undefined. Lengthy responses in customer service often feel like excuses rather than empathy. No structure, no length boundary.'},
+          {k:'B',text:'Keep it short and professional.',ans:false,fb:'"Short" and "professional" are not measurable. Without a word count, structure, or required elements, output varies wildly per run.'},
+          {k:'C',text:'Write the reply in plain text, 3–4 sentences maximum. Structure: (1) empathy acknowledgment, (2) one concrete next step with a specific action, (3) human sign-off using a first name. No bullet points, no headers, no all-caps.',ans:true,fb:'Correct! Length is bounded (3–4 sentences), structure is specified as a 3-part sequence, formatting exclusions prevent robotic layout, and the human sign-off maintains brand warmth.'},
+        ]
+      }
+    },
+    assembled:{
+      c:"You are a senior customer experience specialist for an e-commerce brand known for warm, human-first communication. You never make refund promises, discount commitments, or statements about shipping timelines — those require human approval. You always validate the customer's frustration before offering a path forward.",
+      t:"Write a reply to the 1-star review below. Acknowledge the customer's specific frustration using their own words, express genuine empathy without being defensive, offer one concrete next step the customer can take immediately, and close with a human sign-off. Do not mention competitors, do not promise refunds or replacements, and do not use phrases like \"We apologize for the inconvenience.\"",
+      f:"Write the reply in plain text, 3–4 sentences maximum. Structure: (1) empathy acknowledgment, (2) one concrete next step with a specific action, (3) human sign-off using a first name. No bullet points, no headers, no all-caps."
+    }
+  },
+  p3:{
+    components:{
+      c:{
+        label:'Context',icon:'🏷️',color:'#3b82f6',hint:'Who is the agent — teaching style and audience knowledge?',
+        opts:[
+          {k:'A',text:'You are an AI tutor that explains machine learning.',ans:false,fb:'No audience specification, no teaching philosophy, no constraints. The agent might produce a technically accurate explanation that the marketing team finds completely incomprehensible.'},
+          {k:'B',text:'You are an expert ML engineer. Explain the confusion matrix accurately.',ans:false,fb:'Audience mismatch. An expert ML engineer explaining to non-technical marketers without an audience constraint will default to technical vocabulary, precision notation, and jargon.'},
+          {k:'C',text:'You are an AI literacy instructor specializing in explaining technical concepts to non-technical professionals. Your audience today is a marketing team — they understand campaign performance metrics (CTR, conversion rate, ROAS) but have no ML background. You never use jargon without immediately defining it. You always anchor new concepts to something the audience already knows.',ans:true,fb:'Correct! Audience is specific, prior knowledge is stated (marketing metrics they know), the no-jargon constraint is clear, and the pedagogical approach (anchor to known concepts) is explicit.'},
+        ]
+      },
+      t:{
+        label:'Task',icon:'🎯',color:'#e8333a',hint:'What must the explanation cover — and what must it connect to?',
+        opts:[
+          {k:'A',text:'Explain what a confusion matrix is.',ans:false,fb:'No scope, no audience lens, no connection to prior knowledge, no depth specification. Will produce a Wikipedia-style definition that means nothing to a marketing team.'},
+          {k:'B',text:'Explain the confusion matrix to the marketing team. Define what it is, why it matters for evaluating a predictive model, and explain each of the four cells (True Positive, False Positive, True Negative, False Negative) using a campaign targeting analogy — where the model is predicting which customers will convert. Explain why False Positives and False Negatives have different costs in a business context.',ans:true,fb:'Correct! The explanation is scoped to what matters (4 cells + cost asymmetry), the analogy domain is specified (campaign targeting), and the "why it matters" framing connects ML concepts to business impact.'},
+          {k:'C',text:'Define true positive, false positive, true negative, and false negative.',ans:false,fb:'Technically correct scope but no business framing, no analogy, no audience connection. Giving four definitions to marketers with no context produces memorization without understanding.'},
+        ]
+      },
+      f:{
+        label:'Format',icon:'📐',color:'#22c55e',hint:'How should the explanation be structured for a non-technical audience?',
+        opts:[
+          {k:'A',text:'Write a short explanation.',ans:false,fb:'"Short" is unmeasured and unstructured. No guidance on how to sequence the explanation or where the analogy should sit relative to the definition.'},
+          {k:'B',text:'Structure the response as: (1) a one-sentence plain-English definition, (2) a 2×2 table showing all four cells with the campaign analogy applied to each cell, (3) a 2-sentence business implication for why False Positives and False Negatives have different costs. Keep the total response under 250 words. No mathematical notation.',ans:true,fb:'Correct! The structure is sequenced (definition → table → implication), the 2×2 table makes the concept visual, the word limit prevents over-explanation, and the no-math constraint keeps it accessible.'},
+          {k:'C',text:'Use a table and bullet points to explain it clearly.',ans:false,fb:'Better than prose, but still no sequence, no length constraint, no specification of what the table contains, and no restriction on technical vocabulary.'},
+        ]
+      }
+    },
+    assembled:{
+      c:"You are an AI literacy instructor specializing in explaining technical concepts to non-technical professionals. Your audience today is a marketing team — they understand campaign performance metrics (CTR, conversion rate, ROAS) but have no ML background. You never use jargon without immediately defining it. You always anchor new concepts to something the audience already knows.",
+      t:"Explain the confusion matrix to the marketing team. Define what it is, why it matters for evaluating a predictive model, and explain each of the four cells (True Positive, False Positive, True Negative, False Negative) using a campaign targeting analogy — where the model is predicting which customers will convert. Explain why False Positives and False Negatives have different costs in a business context.",
+      f:"Structure the response as: (1) a one-sentence plain-English definition, (2) a 2×2 table showing all four cells with the campaign analogy applied to each cell, (3) a 2-sentence business implication for why False Positives and False Negatives have different costs. Keep the total response under 250 words. No mathematical notation."
+    }
+  }
+};
+
+let p1Built=false, p2Built=false, p3Built=false;
+const builderState={p1:{},p2:{},p3:{}};
+
+function buildBuilder(pid){
+  if(pid==='p1') p1Built=true;
+  if(pid==='p2') p2Built=true;
+  if(pid==='p3') p3Built=true;
+  const B=BUILDERS[pid];
+  const container=document.getElementById(pid+'builder');
+  container.innerHTML='';
+  ['c','t','f'].forEach(layer=>{
+    const comp=B.components[layer];
+    const sec=document.createElement('div'); sec.className='ctf-section';
+    const lbl=document.createElement('div'); lbl.className='ctf-section-label';
+    lbl.innerHTML=`<span class="ctf-badge" style="background:${layer==='c'?'rgba(59,130,246,.15)':layer==='t'?'rgba(232,51,58,.15)':'rgba(34,197,94,.15)'};color:${layer==='c'?'var(--blue)':layer==='t'?'var(--GA-red)':'var(--green)'}">${comp.icon} ${comp.label}</span><span class="ctf-hint">${comp.hint}</span>`;
+    const opts=document.createElement('div'); opts.className='ctf-opts'; opts.id=`${pid}-${layer}-opts`;
+    comp.opts.forEach((opt,j)=>{
+      const btn=document.createElement('button'); btn.className='ctf-opt'; btn.id=`${pid}-${layer}-opt${j}`;
+      btn.innerHTML=`<div class="copt-k">${opt.k}</div><div>${opt.text}</div>`;
+      btn.addEventListener('click',()=>answerBuilder(pid,layer,j));
+      opts.appendChild(btn);
+    });
+    const fb=document.createElement('div'); fb.className='ctf-fb'; fb.id=`${pid}-${layer}-fb`;
+    sec.appendChild(lbl); sec.appendChild(opts); sec.appendChild(fb);
+    if(layer!=='f'){const div=document.createElement('div');div.style.cssText='height:1px;background:var(--line);margin:22px 0';sec.appendChild(div);}
+    container.appendChild(sec);
+  });
+}
+
+function answerBuilder(pid,layer,optIdx){
+  if(builderState[pid][layer]!==undefined) return;
+  builderState[pid][layer]=optIdx;
+  const B=BUILDERS[pid]; const comp=B.components[layer];
+  const isCorrect=comp.opts[optIdx].ans;
+  const opts=document.getElementById(`${pid}-${layer}-opts`).querySelectorAll('.ctf-opt');
+  opts.forEach((btn,j)=>{
+    btn.classList.add('disabled');
+    if(comp.opts[j].ans) btn.classList.add('correct');
+    else if(j===optIdx&&!isCorrect) btn.classList.add('wrong');
+  });
+  const fb=document.getElementById(`${pid}-${layer}-fb`);
+  fb.innerHTML=`<strong>${isCorrect?'✓ Correct:':'✗ Not quite:'}</strong> ${comp.opts[optIdx].fb}`;
+  fb.className='ctf-fb show '+(isCorrect?'ok':'bad');
+  // tally score for this builder
+  const earned=Object.keys(builderState[pid]).filter(l=>{
+    const idx=builderState[pid][l]; return idx!==undefined && BUILDERS[pid].components[l].opts[idx].ans;
+  }).length;
+  sectionScores[pid]={earned,possible:3};
+  // check if all three answered → show assembled prompt
+  if(Object.keys(builderState[pid]).length===3){
+    showAssembled(pid);
+  }
+}
+
+function showAssembled(pid){
+  const B=BUILDERS[pid];
+  // fill with correct answers regardless of what was picked
+  document.getElementById(`${pid}-c-text`).textContent=B.assembled.c;
+  document.getElementById(`${pid}-t-text`).textContent=B.assembled.t;
+  document.getElementById(`${pid}-f-text`).textContent=B.assembled.f;
+  document.getElementById(`${pid}assembled`).classList.add('visible');
+  document.getElementById(`${pid}NextBtn`).style.display='inline-flex';
+  window.scrollTo({top:document.getElementById(`${pid}assembled`).offsetTop-80,behavior:'smooth'});
+}
+
+// ─── QUIZ ─────────────────────────────────────────────────────────────────────
+const QUESTIONS=[
+  {q:'What does the Context layer of a CTF prompt primarily control?',
+   opts:['The data type and length of the output','The role, expertise, constraints, and persona the agent reasons from','The exact action the agent must perform','The number of bullet points in the response'],
+   ans:1,
+   ok:'Correct! Context establishes who the agent is — its role, domain knowledge, tone, and constraints. Without it, the agent defaults to a generic assistant with no domain authority.',
+   bad:'Not quite. Context controls the agent\'s identity and reasoning lens — role, domain expertise, constraints, and persona. It answers "who is this agent and what does it know?"'},
+  {q:'A prompt says: "Explain machine learning to my team." Which CTF layer is most obviously missing?',
+   opts:['Context — no role specified for the agent','Task — no action scope or depth defined','Format — no output structure specified','All three layers are present'],
+   ans:2,
+   ok:'Correct! The prompt has a vague task (explain), no audience specification in context, and no format. But the most critical missing element is Format — without structure, output is unpredictable every single run.',
+   bad:'Not quite. While all three layers are weak, Format is the most obviously absent. Without specifying structure (table? bullets? length? vocabulary level?), every run produces a different kind of response.'},
+  {q:'Why does the Healthcare prompt specify "flag ambiguous cases rather than assume" in the Context layer?',
+   opts:['To make the prompt shorter','To define edge-case behavior — so the agent doesn\'t hallucinate a clinical finding when input data is unclear','To improve LLM processing speed','To prevent the agent from using medical terminology'],
+   ans:1,
+   ok:'Correct! Edge-case behavior defined in Context prevents hallucination under uncertainty. Without this instruction, the agent fills ambiguity with a plausible-sounding but potentially dangerous guess.',
+   bad:'Not quite. This is an edge-case behavior instruction: it tells the agent what to do when the input is unclear. Without it, the LLM defaults to generating a plausible answer even when it shouldn\'t.'},
+  {q:'In the Customer Service prompt, why is "Do not use phrases like \'We apologize for the inconvenience\'" included in the Task layer?',
+   opts:['To make the response shorter','To prevent the agent from acknowledging any responsibility','To explicitly exclude clichéd phrases that feel robotic and undermine the brand\'s human-first voice','To reduce the LLM token cost'],
+   ans:2,
+   ok:'Correct! LLMs default to high-frequency training patterns — "We apologize for the inconvenience" is one of the most common support phrases. Explicitly excluding it forces genuinely human-sounding language.',
+   bad:'Not quite. LLMs are trained on massive amounts of customer service data and default to common phrases. Explicitly excluding clichés forces the agent to generate authentic, brand-appropriate language instead.'},
+  {q:'The Education prompt specifies "No mathematical notation" in the Format layer. What does this achieve?',
+   opts:['It makes the explanation less accurate','It reduces the output length','It prevents the LLM from using symbols (Σ, matrices, percentages) that would lose a non-technical audience','It forces the agent to use bullet points'],
+   ans:2,
+   ok:'Correct! Format constraints control vocabulary boundaries, not just structure. "No mathematical notation" prevents the LLM from slipping into notation that is accurate but incomprehensible to the audience.',
+   bad:'Not quite. Format can constrain vocabulary and notation, not just structure. Excluding mathematical notation prevents the agent from using technically precise but audience-inappropriate symbols.'},
+  {q:'Which is the strongest Format instruction for a prompt that feeds output to a downstream API?',
+   opts:['"Give me a summary"','"Use bullet points"','"Return a JSON array where each object has keys: id (string), score (number 0–10), tags (array of strings). Output only the JSON — no markdown, preamble, or explanation."','"Write about 3-4 sentences"'],
+   ans:2,
+   ok:'Correct! Downstream APIs need parsable, deterministic output. Specifying JSON schema, value types, and explicitly excluding noise (markdown, preamble) makes output machine-readable on every single run.',
+   bad:'Not quite. The JSON schema option is correct for API integration. It specifies data type, key names, value types, and explicitly excludes unparsable noise — making the output reliably machine-readable.'},
+  {q:'What is "the Confusion Tax" in the context of prompt engineering?',
+   opts:['The computational cost of running large prompts','The performance penalty when an agent hallucinates','The accumulated cost — in quality, consistency, and rework — paid every time a prompt leaves context, task, or format undefined','The token cost of adding few-shot examples to a prompt'],
+   ans:2,
+   ok:'Correct! Every degree of ambiguity in a prompt forces the agent to guess — and those guesses compound across a multi-step loop. The Confusion Tax is the downstream cost of that ambiguity: inconsistent output, manual corrections, and broken pipelines.',
+   bad:'Not quite. The Confusion Tax is the cost paid when prompts are ambiguous. The agent fills gaps with guesses, those guesses compound across steps, and teams spend time correcting output that should have been right the first time.'},
+];
+
+let qIdx=0,qScore=0,quizStarted=false,qAnswered=false;
+function initQuiz(){quizStarted=true;qIdx=0;qScore=0;showQ();}
+function showQ(){
+  qAnswered=false;
+  const q=QUESTIONS[qIdx];
+  document.getElementById('qProg').style.width=(qIdx/QUESTIONS.length*100)+'%';
+  document.getElementById('qMeta').textContent='Question '+(qIdx+1)+' of '+QUESTIONS.length;
+  document.getElementById('qScoreTxt').textContent='Score: '+qScore+' / '+qIdx;
+  document.getElementById('quizQ').textContent=q.q;
+  document.getElementById('quizFB').className='fb-box';
+  document.getElementById('quizFB').innerHTML='';
+  document.getElementById('qNextBtn').style.display='none';
+  const L=['A','B','C','D'];
+  document.getElementById('quizOpts').innerHTML=q.opts.map((o,i)=>
+    `<button class="q-opt" onclick="answerQ(${i})" id="opt${i}"><div class="opt-k">${L[i]}</div>${o}</button>`
+  ).join('');
+}
+function answerQ(i){
+  if(qAnswered) return; qAnswered=true;
+  const q=QUESTIONS[qIdx]; const ok=i===q.ans;
+  if(ok) qScore++;
+  document.querySelectorAll('.q-opt').forEach((el,idx)=>{
+    el.classList.add('disabled');
+    if(idx===q.ans) el.classList.add('correct');
+    else if(idx===i&&!ok) el.classList.add('wrong');
+  });
+  const fb=document.getElementById('quizFB');
+  fb.innerHTML=`<span class="fb-icon">${ok?'✓':'✗'}</span><span>${ok?q.ok:q.bad}</span>`;
+  fb.className='fb-box show '+(ok?'ok':'bad');
+  document.getElementById('qScoreTxt').textContent='Score: '+qScore+' / '+(qIdx+1);
+  document.getElementById('qNextBtn').style.display='inline-flex';
+  if(qIdx===QUESTIONS.length-1) document.getElementById('qNextBtn').textContent='See Results →';
+}
+function nextQ(){qIdx++;if(qIdx>=QUESTIONS.length){showQuizDone();return;}showQ();}
+function showQuizDone(){
+  document.getElementById('quizActive').style.display='none';
+  document.getElementById('quizDone').style.display='block';
+  const pct=Math.round(qScore/QUESTIONS.length*100);
+  sectionScores.quiz={earned:qScore,possible:QUESTIONS.length};
+  document.getElementById('qBadge').innerHTML=`<span class="badge ${pct>=70?'b-green':'b-red'}">${qScore}/${QUESTIONS.length} · ${pct}%</span>`;
+  document.getElementById('qMsg').textContent=pct>=70
+    ?`Strong work! You scored ${pct}%. You can now write precise, role-appropriate prompts that produce consistent structured output across healthcare, customer service, and educational contexts.`
+    :`You scored ${pct}%. Review the CTF Framework and the Prompt Builder feedback — focus on why each weak option fails and what the strong option controls that the weaker ones don't.`;
+  if(pct>=70) markDone('quiz');
+}
+
+// ─── RESULTS ─────────────────────────────────────────────────────────────────
+function buildResults(){
+  markDone('results');
+  const te=Object.values(sectionScores).reduce((s,x)=>s+(x.earned||0),0);
+  const tp=Object.values(sectionScores).reduce((s,x)=>s+(x.possible||0),0);
+  const pct=tp>0?Math.round((te/tp)*100):0;
+  const grade=pct>=90?{l:'Prompt Architect',    e:'🏆',m:'Outstanding — every layer is precise and purposeful.'}:
+              pct>=70?{l:'Structured Crafter',   e:'✦',  m:'Strong foundation. Review the edge cases you missed.'}:
+              pct>=50?{l:'Framework Apprentice', e:'📐', m:'Good start — revisit Context and Format layers.'}:
+                      {l:'Explorer',             e:'🔍', m:'Re-read the framework and retry each builder.'};
+  const circ=2*Math.PI*52, dash=circ*(1-pct/100);
+  const breakdown=[
+    {key:'anatomy',label:'Prompt Anatomy Lab'},
+    {key:'p1',     label:'Prompt 1 — Healthcare AI'},
+    {key:'p2',     label:'Prompt 2 — Customer Service'},
+    {key:'p3',     label:'Prompt 3 — AI Instruction'},
+    {key:'quiz',   label:'Knowledge Check Quiz'},
+  ];
+  const rows=breakdown.map(item=>{
+    const s=sectionScores[item.key]; if(!s) return '';
+    const p=Math.round((s.earned/s.possible)*100);
+    const col=p>=80?'var(--green)':p>=50?'var(--yellow)':'var(--GA-red)';
+    return `<div class="score-row">
+      <div class="score-dot" style="background:${col}"></div>
+      <span style="flex:1;font-size:.9rem;font-weight:500;color:var(--gray-lt)">${item.label}</span>
+      <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${p}%;background:${col}"></div></div>
+      <span style="font-size:.82rem;color:var(--gray);min-width:38px;text-align:right">${s.earned}/${s.possible}</span>
+      <span class="badge" style="background:${p>=80?'rgba(34,197,94,.15)':p>=50?'rgba(245,197,24,.15)':'rgba(232,51,58,.15)'};color:${col};min-width:38px;text-align:center">${p}%</span>
+    </div>`;
+  }).join('');
+  const takeaways=[
+    'Context gives the agent its identity — role, domain authority, constraints, and edge-case behavior. Without it, every run starts from a generic, authorityless position.',
+    'Format is not cosmetic. It controls parsability, consistency, and machine-readability. Agents whose output feeds downstream systems require deterministic JSON structure, not "a list."',
+    'The Confusion Tax is real — every degree of ambiguity in a prompt forces a guess that compounds across the reasoning loop. Strong CTF prompts eliminate the tax before it accumulates.',
+  ].map((t,i)=>`<div class="takeaway-item"><div class="tk-num">0${i+1}</div><div class="tk-txt">${t}</div></div>`).join('');
+  document.getElementById('resultsBody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap;padding-bottom:36px;border-bottom:1px solid var(--line);margin-bottom:32px">
+      <div class="results-ring">
+        <svg width="120" height="120" style="transform:rotate(-90deg)" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--black3)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--GA-red)" stroke-width="8"
+            stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${dash.toFixed(1)}"
+            stroke-linecap="round" style="transition:stroke-dashoffset 1.2s ease"/>
+        </svg>
+        <div class="results-ring-txt"><div class="ring-pct">${pct}%</div><div class="ring-sub">score</div></div>
+      </div>
+      <div>
+        <div style="font-size:2rem;margin-bottom:4px">${grade.e}</div>
+        <h2 style="font-size:clamp(2rem,5vw,2.8rem);margin-bottom:6px">${grade.l}</h2>
+        <p style="color:var(--gray-lt);font-size:.95rem">${grade.m}</p>
+        <p style="color:var(--gray-dk);font-size:.82rem;margin-top:6px;font-family:'JetBrains Mono',monospace">${te} pts earned · ${tp} pts possible</p>
+      </div>
+    </div>
+    <span class="eyebrow">Score Breakdown</span>
+    <div class="card" style="padding:8px 20px;margin-bottom:28px">${rows}</div>
+    <span class="eyebrow">Key Takeaways</span>
+    <div class="card" style="padding:8px 20px;margin-bottom:24px">${takeaways}</div>
+    <div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:var(--r-lg);padding:20px">
+      <p style="font-size:.92rem;color:var(--gray-lt);line-height:1.7">
+        🎉 <strong style="color:#fff">Well done!</strong> You've completed Structured Prompt Crafting.<br/>
+        Next module: <strong style="color:#fff">Tools and Actions</strong> — where you'll connect the prompts you wrote today to the tools that execute them.
+      </p>
+    </div>`;
+}
+</script>
+</body>
+</html>
