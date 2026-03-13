@@ -365,3 +365,7 @@ A prompt that passes all six test types is ready for supervised production deplo
 - Perez & Ribeiro — *Ignore Previous Prompt: Attack Techniques for Language Models* (2022)
 - [LangChain — System Prompts and Agent Configuration](https://docs.langchain.com/docs/components/agents)
 - Riley Goodside — *Prompt Injection Attacks* (2022) — [simonwillison.net](https://simonwillison.net/2022/Sep/12/prompt-injection/)
+
+---
+
+*General Assembly · Build AI Agents · BAA 16.0 · © 2026*
