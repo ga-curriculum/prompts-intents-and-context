@@ -343,8 +343,7 @@ A prompt that passes all six test types is ready for supervised production deplo
 
 ## 5. Lab (60 min)
 
-*Lab details in the Lab Guide document.*
-
+- https://pages.git.generalassemb.ly/Build-AI-Agents/Prompts-Intents-and-Context/
 ---
 
 ## 6. Wrap-Up & Reflection (5 min)
