@@ -368,4 +368,4 @@ A prompt that passes all six test types is ready for supervised production deplo
 
 ---
 
-*General Assembly · Build AI Agents · BAA 16.0 · © 2026*
+*General Assembly · Build AI Agents · BAA 6.0 · © 2026*
